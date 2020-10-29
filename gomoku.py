@@ -27,7 +27,7 @@ def detect_rows(board, col, length):
 def search_max(board):
     return move_y, move_x
     
-def score(board):
+def score(board): # return int
     MAX_SCORE = 100000
     
     open_b = {}
@@ -60,7 +60,7 @@ def is_win(board):
     pass
 
 
-def print_board(board):
+def print_board(board): # return void
     
     s = "*"
     for i in range(len(board[0])-1):
