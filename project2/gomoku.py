@@ -107,7 +107,6 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
 
     return open_seq_count, semi_open_seq_count
 
-
 def detect_rows(board, col, length):
     '''Return a tuple whose first element is the number of open sequences 
     of color col and length length on the entire board, and whose second 
@@ -153,7 +152,17 @@ def detect_rows(board, col, length):
     return open_seq_count, semi_open_seq_count
     
 def search_max(board):
-
+    move_y, move_x = -1, -1
+    max_score = -11111111111111111111111111111111111111111111111
+    for i in range(8):
+        for j in range(8):
+            if (board[i][j] == ' '):
+                board[i][j] = 'b'
+                s = score(board)
+                if (s > max_score):
+                    move_y, move_x = i, j
+                    max_score = s
+                board[i][j] = ' '
     return move_y, move_x
     
 def score(board): # return int
@@ -184,8 +193,8 @@ def score(board): # return int
             10   * semi_open_b[3]                +  
             open_b[2] + semi_open_b[2] - open_w[2] - semi_open_w[2])
 
-    
-def is_win(board):
+
+def iswin(board):
     '''Return the index corresponding to the game state in this array
     ["White Wins", "Black Wins", "Draw", "Continue Playing"]'''
     draw = True
@@ -194,39 +203,43 @@ def is_win(board):
             if draw and board[i][j] == ' ':
                 draw = False
             # horizontal case:
-            if i + 5 < len(board):
-                if board[i:i + 5] == ["b"] * 5:
+            if j + 4 < len(board):
+                temp_1 = []
+                for b in range(5):
+                    temp_1.append(board[i][j+b])
+                if (temp_1 == ["b"] * 5):
                     return 1
-            if i - 5 >= 0:
-                if board[i - 5:i] == ["b"] * 5:
-                    return 1
+                if (temp_1 == ["w"] * 5):
+                    return 0
             
-            if i + 5 < len(board):
-                if board[i:i + 5] == ["w"] * 5:
-                    return 0
-            if i - 5 >= 0:
-                if board[i - 5:i] == ["w"] * 5:
-                    return 0
-            #vertical case:
-            if j + 5 < len(board):
-                if board[j:j + 5] == ["b"] * 5:
+
+            # vertical case:
+            if i + 4 < len(board):
+                temp_2 = []
+                for c in range(5):
+                    temp_2.append(board[i+c][j])
+                if (temp_2 == ["b"] * 5):
                     return 1
-            if j - 5 >= 0:
-                if board[j - 5:j] == ["b"] * 5:
-                    return 1
-            
-            if j + 5 < len(board):
-                if board[j:j + 5] == ["w"] * 5:
+                if (temp_2 == ["w"] * 5):
                     return 0
-            if j - 5 >= 0:
-                if board[j - 5:j] == ["w"] * 5:
-                    return 0
+
             # diagonal case:
-            
+            if i + 4 < len(board) and j + 4 < len(board):
+                temp = []
+                for a in range(5):
+                    temp.append(board[i+a][j+a])
+                if (temp == ["b"] * 5):
+                    return 1
+                if (temp == ["w"] * 5):
+                    return 0
+    
     if draw:
         return 2
     return 3
 
+def is_win(board):
+    states = ["White Wins", "Black Wins", "Draw", "Continue Playing"]
+    return states[iswin(board)]
 
 def print_board(board): # return void
     
@@ -310,14 +323,14 @@ def put_seq_on_board(board, y, x, d_y, d_x, length, col):
         x += d_x
 
 
-def test_is_empty(self):
+def test_is_empty():
     board  = make_empty_board(8)
     if is_empty(board):
         print("TEST CASE for is_empty PASSED")
     else:
         print("TEST CASE for is_empty FAILED")
 
-def test_is_bounded(self):
+def test_is_bounded():
     board = make_empty_board(8)
     x = 5; y = 1; d_x = 0; d_y = 1; length = 3
     put_seq_on_board(board, y, x, d_y, d_x, length, "w")
@@ -332,7 +345,7 @@ def test_is_bounded(self):
         print("TEST CASE for is_bounded FAILED")
 
 
-def test_detect_row(self):
+def test_detect_row():
     board = make_empty_board(8)
     x = 5; y = 1; d_x = 0; d_y = 1; length = 3
     put_seq_on_board(board, y, x, d_y, d_x, length, "w")
@@ -342,7 +355,7 @@ def test_detect_row(self):
     else:
         print("TEST CASE for detect_row FAILED")
 
-def test_detect_rows(self):
+def test_detect_rows():
     board = make_empty_board(8)
     x = 5; y = 1; d_x = 0; d_y = 1; length = 3; col = 'w'
     put_seq_on_board(board, y, x, d_y, d_x, length, "w")
@@ -352,7 +365,7 @@ def test_detect_rows(self):
     else:
         print("TEST CASE for detect_rows FAILED")
 
-def test_search_max(self):
+def test_search_max():
     board = make_empty_board(8)
     x = 5; y = 0; d_x = 0; d_y = 1; length = 4; col = 'w'
     put_seq_on_board(board, y, x, d_y, d_x, length, col)
@@ -364,14 +377,14 @@ def test_search_max(self):
     else:
         print("TEST CASE for search_max FAILED")
 
-def easy_testset_for_main_functions(self):
+def easy_testset_for_main_functions():
     test_is_empty()
     test_is_bounded()
     test_detect_row()
     test_detect_rows()
     test_search_max()
 
-def some_tests(self):
+def some_tests():
     board = make_empty_board(8)
 
     board[0][5] = "w"
@@ -486,8 +499,5 @@ def some_tests(self):
     #        Open rows of length 5: 0
     #        Semi-open rows of length 5: 0
 
-
-
-        
 if __name__ == '__main__':
-    play_gomoku(8)
+    easy_testset_for_main_functions()
