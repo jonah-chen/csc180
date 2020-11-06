@@ -1,14 +1,6 @@
-"""Gomoku starter code
-You should complete every incomplete function,
-and add more functions and variables as needed.
-
-Note that incomplete functions have 'pass' as the first statement:
-pass is a Python keyword; it is a statement that does nothing.
-This is a placeholder that you should remove once you modify the function.
-
-Author(s): Michael Guerzhoy with tests contributed by Siavash Kazemian.  Last modified: Oct. 26, 2020
+"""Basic Gomoku Program for Project 2. Contains: Game, Basic Computer Player, Basic Scoring Polynomial
+Author(s): mak13789, hina
 """
-
 
 def is_empty(board): 
     '''Return True iff the board is empty
@@ -60,7 +52,6 @@ def is_bounded(board, y_end, x_end, length, d_y, d_x):
         return 'CLOSED'
 
     return 'ERROR!'
-
 
 def detect_row(board, col, y_start, x_start, length, d_y, d_x):
     '''Return a tuple whose first element is the number of open sequences 
@@ -117,12 +108,12 @@ def detect_rows(board, col, length):
     board_length = len(board)
 
     for w in range(board_length):
-        # Checks for left to right sequences
+        # Checks for up to down sequences
         x1, x2 = detect_row(board, col, 0, w, length, 1, 0)
         open_seq_count += x1
         semi_open_seq_count += x2
         
-        # Checks for up to down sequences
+        # Checks for left to right sequences
         x1, x2 = detect_row(board, col, w, 0, length, 0, 1)
         open_seq_count += x1
         semi_open_seq_count += x2
@@ -168,6 +159,7 @@ def search_max(board):
     return move_y, move_x
     
 def score(board): # return int
+    '''Basic scoring polynomial returns int score. Higher score is better for black.'''
     MAX_SCORE = 100000
     
     open_b = {}
@@ -195,10 +187,9 @@ def score(board): # return int
             10   * semi_open_b[3]                +  
             open_b[2] + semi_open_b[2] - open_w[2] - semi_open_w[2])
 
-
 def iswin(board):
     '''Return the index corresponding to the game state in this array
-    ["White Wins", "Black Wins", "Draw", "Continue Playing"]'''
+    ["White won", "Black won", "Draw", "Continue Playing"]'''
     draw = True
     for i in range(len(board)):
         for j in range(len(board)):
@@ -240,7 +231,7 @@ def iswin(board):
     return 3
 
 def is_win(board):
-    states = ["White Wins", "Black Wins", "Draw", "Continue Playing"]
+    states = ["White won", "Black won", "Draw", "Continue Playing"]
     return states[iswin(board)]
 
 def print_board(board): # return void
@@ -262,16 +253,15 @@ def print_board(board): # return void
     
     print(s)
 
-
 def make_empty_board(sz):
     board = []
     for i in range(sz):
         board.append([" "]*sz)
     return board
                 
-
 def analysis(board):
     # Score
+    ## REMOVE THIS OTHERWISE WE WILL GET ZERO!!!!
     print(f'Score: {score(board)}')
     for c, full_name in [["b", "Black"], ["w", "White"]]:
         print("%s stones" % (full_name))
@@ -279,7 +269,6 @@ def analysis(board):
             open, semi_open = detect_rows(board, c, i)
             print("Open rows of length %d: %d" % (i, open))
             print("Semi-open rows of length %d: %d" % (i, semi_open))
-        
     
 def play_gomoku(board_size):
     board = make_empty_board(board_size)
@@ -303,10 +292,7 @@ def play_gomoku(board_size):
         if game_res in ["White won", "Black won", "Draw"]:
             return game_res
             
-            
-        
-        
-        
+   
         print("Your move:")
         move_y = int(input("y coord: "))
         move_x = int(input("x coord: "))
@@ -317,15 +303,12 @@ def play_gomoku(board_size):
         game_res = is_win(board)
         if game_res in ["White won", "Black won", "Draw"]:
             return game_res
-        
-            
-            
+
 def put_seq_on_board(board, y, x, d_y, d_x, length, col):
     for i in range(length):
         board[y][x] = col        
         y += d_y
         x += d_x
-
 
 def test_is_empty():
     board  = make_empty_board(8)
@@ -347,7 +330,6 @@ def test_is_bounded():
         print("TEST CASE for is_bounded PASSED")
     else:
         print("TEST CASE for is_bounded FAILED")
-
 
 def test_detect_row():
     board = make_empty_board(8)
@@ -503,5 +485,8 @@ def some_tests():
     #        Open rows of length 5: 0
     #        Semi-open rows of length 5: 0
 
+
+    
+
 if __name__ == '__main__':
-    play_gomoku(8)
+    print(play_gomoku(8))
