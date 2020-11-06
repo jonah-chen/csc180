@@ -46,9 +46,9 @@ def is_bounded(board, y_end, x_end, length, d_y, d_x):
 
     # If one end exceeds the border, no stones can be placed, or if the square is occupied
     # The or short circuits, thus, no index error should be thrown
-    if (y1 < 0 or  x1 < 0 or y1 >= length or x1 >= length or board[y1, x1] != ' '):
+    if (y1 < 0 or  x1 < 0 or y1 >= length or x1 >= length or board[y1][x1] != ' '):
         state -= 1
-    if (y2 < 0 or x2 < 0 or y2 >= length or x2 >= length or board[y2, x2] != ' '):
+    if (y2 < 0 or x2 < 0 or y2 >= length or x2 >= length or board[y2][x2] != ' '):
         state -= 1
 
     # hAhA nO SwitCH StATeMenT iN pYThoN
@@ -82,27 +82,27 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
     x_counter, y_counter = x_start, y_start
     while (x_counter >= 0 and y_counter >= 0 and x_counter < board_size and y_counter < board_size):
         R.append(board[y_counter][x_counter])
-        y_counter += dir
-        x_counter += dir
+        y_counter += dir * d_y
+        x_counter += dir * d_x
 
     # Checks for errors
-    if len(R) < length:
+    if len(R) <= length:
         return (0, 0)
 
     # Checks for sequences at the edges
     if R[:length] == [col] * length and R[length] == ' ':
         semi_open_seq_count += 1
-    if R[-length:] == [col] * length and R[-length] == ' ':
+    if R[-length:] == [col] * length and R[-length - 1] == ' ':
         semi_open_seq_count += 1
 
     # iterate through R
     for w in range(1, len(R) - length - 1):
         if R[w:w + length] == [col] * length: 
             # Check open sequences
-            if R[w - 1] == ' ' and R[w + 1] == ' ': 
+            if R[w - 1] == ' ' and R[w + length] == ' ': 
                 open_seq_count += 1
-            # Check closed sequences
-            elif R[w - 1] == ' ' or R[w + length + 1] == ' ':
+            # Check semi open sequences 
+            elif (R[w - 1] == ' ' or R[w + length] == ' ') and R[w + length] != col and R[w - 1] != col:
                 semi_open_seq_count += 1
 
     return open_seq_count, semi_open_seq_count
@@ -134,20 +134,22 @@ def detect_rows(board, col, length):
         x1, x2 = detect_row(board, col, 0, w, length, 1, 1)
         open_seq_count += x1
         semi_open_seq_count += x2
-        x1, x2 = detect_row(board, col, w, board_length, length, 1, 1)
-        open_seq_count += x1
-        semi_open_seq_count += x2
+        if w != 0:
+            x1, x2 = detect_row(board, col, w, 0, length, 1, 1)
+            open_seq_count += x1
+            semi_open_seq_count += x2
 
         # Checks for diagonal sequences like
         #   X
         #  X
         # X
-        x1, x2 = detect_row(board, col, w, 0, length, 1, -1)
+        x1, x2 = detect_row(board, col, w, 0, length, -1, 1)
         open_seq_count += x1
         semi_open_seq_count += x2
-        x1, x2 = detect_row(board, col, board_length, w, length, 1, -1)
-        open_seq_count += x1
-        semi_open_seq_count += x2
+        if w != 0:
+            x1, x2 = detect_row(board, col, board_length - 1, w, length, 1, -1)
+            open_seq_count += x1
+            semi_open_seq_count += x2
 
     return open_seq_count, semi_open_seq_count
     
@@ -259,7 +261,7 @@ def print_board(board): # return void
     s += (len(board[0])*2 + 1)*"*"
     
     print(s)
-    
+
 
 def make_empty_board(sz):
     board = []
@@ -269,6 +271,8 @@ def make_empty_board(sz):
                 
 
 def analysis(board):
+    # Score
+    print(f'Score: {score(board)}')
     for c, full_name in [["b", "Black"], ["w", "White"]]:
         print("%s stones" % (full_name))
         for i in range(2, 6):
@@ -465,7 +469,7 @@ def some_tests():
     y = 5; x = 3; d_x = -1; d_y = 1; length = 1
     put_seq_on_board(board, y, x, d_y, d_x, length, "b")
     print_board(board)
-    analysis(board);   #WHY ARE THERE SEMISCOLONS!!!!!!!!!!!!!!!!!!!!!!!!
+    analysis(board)   # WHY ARE THERE SEMISCOLONS!!!!!!!!!!!!!!!!!!!!!!!!
     
     #        Expected output:
     #           *0|1|2|3|4|5|6|7*
@@ -500,4 +504,4 @@ def some_tests():
     #        Semi-open rows of length 5: 0
 
 if __name__ == '__main__':
-    easy_testset_for_main_functions()
+    play_gomoku(8)
