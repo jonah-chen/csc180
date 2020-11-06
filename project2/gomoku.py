@@ -2,16 +2,6 @@
 Author(s): mak13789, hina
 """
 
-def is_empty(board): 
-    '''Return True iff the board is empty
-    '''
-    for i in board:
-        for j in i:
-            if ' ' != j:
-                return False
-    return True
-    
-
 # The tuple (d_y, d_x) represent
 # (1,0) direction from left to right (horizontal)
 # (0,1) direction from top to bottom (vertical)
@@ -24,6 +14,16 @@ def is_empty(board):
 #   #
 # #
 
+
+def is_empty(board): 
+    '''Return True iff the board is empty
+    '''
+    for i in board:
+        for j in i:
+            if ' ' != j:
+                return False
+    return True
+    
 
 def is_bounded(board, y_end, x_end, length, d_y, d_x):
     '''Return 'OPEN' for open sequences, 'SEMIOPEN' for semiopen sequences 
@@ -52,6 +52,7 @@ def is_bounded(board, y_end, x_end, length, d_y, d_x):
         return 'CLOSED'
 
     return 'ERROR!'
+
 
 def detect_row(board, col, y_start, x_start, length, d_y, d_x):
     '''Return a tuple whose first element is the number of open sequences 
@@ -98,6 +99,7 @@ def detect_row(board, col, y_start, x_start, length, d_y, d_x):
 
     return open_seq_count, semi_open_seq_count
 
+
 def detect_rows(board, col, length):
     '''Return a tuple whose first element is the number of open sequences 
     of color col and length length on the entire board, and whose second 
@@ -143,7 +145,8 @@ def detect_rows(board, col, length):
             semi_open_seq_count += x2
 
     return open_seq_count, semi_open_seq_count
-    
+
+
 def search_max(board):
     move_y, move_x = -1, -1
     max_score = -11111111111111111111111111111111111111111111111
@@ -157,7 +160,8 @@ def search_max(board):
                     max_score = s
                 board[i][j] = ' '
     return move_y, move_x
-    
+
+
 def score(board): # return int
     '''Basic scoring polynomial returns int score. Higher score is better for black.'''
     MAX_SCORE = 100000
@@ -186,6 +190,7 @@ def score(board): # return int
             50   * open_b[3]                     + 
             10   * semi_open_b[3]                +  
             open_b[2] + semi_open_b[2] - open_w[2] - semi_open_w[2])
+
 
 def iswin(board):
     '''Return the index corresponding to the game state in this array
@@ -230,9 +235,11 @@ def iswin(board):
         return 2
     return 3
 
+
 def is_win(board):
     states = ["White won", "Black won", "Draw", "Continue Playing"]
     return states[iswin(board)]
+
 
 def print_board(board): # return void
     
@@ -253,12 +260,14 @@ def print_board(board): # return void
     
     print(s)
 
+
 def make_empty_board(sz):
     board = []
-    for i in range(sz):
+    for _ in range(sz):
         board.append([" "]*sz)
     return board
-                
+
+
 def analysis(board):
     # Score
     ## REMOVE THIS OTHERWISE WE WILL GET ZERO!!!!
@@ -269,7 +278,8 @@ def analysis(board):
             open, semi_open = detect_rows(board, c, i)
             print("Open rows of length %d: %d" % (i, open))
             print("Semi-open rows of length %d: %d" % (i, semi_open))
-    
+
+
 def play_gomoku(board_size):
     board = make_empty_board(board_size)
     board_height = len(board)
@@ -304,11 +314,13 @@ def play_gomoku(board_size):
         if game_res in ["White won", "Black won", "Draw"]:
             return game_res
 
+
 def put_seq_on_board(board, y, x, d_y, d_x, length, col):
-    for i in range(length):
+    for _ in range(length):
         board[y][x] = col        
         y += d_y
         x += d_x
+
 
 def test_is_empty():
     board  = make_empty_board(8)
@@ -316,6 +328,7 @@ def test_is_empty():
         print("TEST CASE for is_empty PASSED")
     else:
         print("TEST CASE for is_empty FAILED")
+
 
 def test_is_bounded():
     board = make_empty_board(8)
@@ -331,6 +344,7 @@ def test_is_bounded():
     else:
         print("TEST CASE for is_bounded FAILED")
 
+
 def test_detect_row():
     board = make_empty_board(8)
     x = 5; y = 1; d_x = 0; d_y = 1; length = 3
@@ -341,6 +355,7 @@ def test_detect_row():
     else:
         print("TEST CASE for detect_row FAILED")
 
+
 def test_detect_rows():
     board = make_empty_board(8)
     x = 5; y = 1; d_x = 0; d_y = 1; length = 3; col = 'w'
@@ -350,6 +365,7 @@ def test_detect_rows():
         print("TEST CASE for detect_rows PASSED")
     else:
         print("TEST CASE for detect_rows FAILED")
+
 
 def test_search_max():
     board = make_empty_board(8)
@@ -363,12 +379,14 @@ def test_search_max():
     else:
         print("TEST CASE for search_max FAILED")
 
+
 def easy_testset_for_main_functions():
     test_is_empty()
     test_is_bounded()
     test_detect_row()
     test_detect_rows()
     test_search_max()
+
 
 def some_tests():
     board = make_empty_board(8)
@@ -485,8 +503,6 @@ def some_tests():
     #        Open rows of length 5: 0
     #        Semi-open rows of length 5: 0
 
-
-    
 
 if __name__ == '__main__':
     print(play_gomoku(8))

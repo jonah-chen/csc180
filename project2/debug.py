@@ -24,4 +24,4 @@ def convert_good_to_bad_board(good_board):
     return bad_board
 
 if __name__=='__main__':
-    print_board(random_board((8,8,), bad=True))
+    pass
