@@ -1,5 +1,9 @@
+"""
+"""
+
 import numpy as np
 from time import perf_counter
+from copy import copy
 
 def cosine_similarity(vec1, vec2):
     """Return the cosine similarity of the two words described by the vectors vec1 and vec2 as a float.
@@ -30,29 +34,35 @@ def build_semantic_descriptors(sentences):
     Returns:
         dictionary of dictionary (string:int): semantic descripter
     """
-    print(len(sentences))
     start = perf_counter()
     d = {}
     for sentence in sentences:
-        #print(sentence)
+        freq = {} # Frequency of each word I ate my dog ate. :{I->1, ate->2...}
         for word in sentence:
+            if word in freq:
+                freq[word] += 1
+            else:
+                freq[word] = 1
+        for word in sentence:
+            d[word] = copy(freq)
+            del d[word][word]
 
-            for other_word in sentence:
-                if other_word != word:
-                    if word in d:
-                        if other_word in d[word]:
-                            d[word][other_word] += 1
-                        else:
-                            d[word][other_word] = 1
-                    else:
-                        d[word] = {}
-                        d[word][other_word] = 1
+            # for other_word in sentence:
+            #     if other_word != word:
+            #         if word in d:
+            #             if other_word in d[word]:
+            #                 d[word][other_word] += 1
+            #             else:
+            #                 d[word][other_word] = 1
+            #         else:
+            #             d[word] = {}
+            #             d[word][other_word] = 1
 
     end = perf_counter()
 
-    print(f"{(end-start)*1e6}")
+    print(f"{(end-start)*1e3:.3f}ms")
     return d
-            
+
 def build_semantic_descriptors_from_files(filenames):
     """Return the semantic descriptors for all the words in the files with filename filenames
 
@@ -63,28 +73,77 @@ def build_semantic_descriptors_from_files(filenames):
     for filename in filenames:
         f = open(filename, "r", encoding="latin1").read()
 
-        for p in [",", "-", "--", ":", ";"]:
-            f.replace(p, "")
+        for p in [",", "-", "--", ":", ";", "\n", "\""]:
+            # remove the \n and the " character if instructed
+            f = f.replace(p, " ")
         f = f.split(".")
-        print(f[0])
+        f1 = []
+        for e in f:
+            f1 += e.split("!") 
+        f2 = []
+        for e in f1:
+            f2 += e.split("?") 
+        del f, f1
+        f = f2
 
         for i in range(len(f)):
-            f[i] = f[i].split(" ")
-        print(f[0])
+            f[i] = f[i].split()
+        
 
         sem_des = build_semantic_descriptors(f)
         for (key, value) in sem_des.items():
             if key in d: # man
                 for (k, v) in value.items(): # {i, 3; am,3; a,2, etc}
                     if k in d[key]:
-                        d[key] += v
+                        d[key][k] += v
                     else:
-                        d[key] = v
+                        d[key][k] = v
             else:
                 d[key] = value                
     return d
 
-    
+ #Subpart d
+ 
+def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
+    """Finds the most similar word from the list of choices to the word words
+
+    Args:
+        word (string): the word for which a synonum is attempted to be found
+        choices (list of string): the available options for the synonym
+        semantic_descriptors (dictionary of dictionary): semantic descriptors built from build_semantic_descriptors method
+        similarity_fn (float(vec1, vec2, *args)): A function that return a number from the subset (-1,infinity] which higher number means more similar.keys
+
+    Returns:
+        string: the best synonym chosen by semantic_descriptors and similarity_fn.
+    """
+    largest_similarity = -2.0
+    vec1 = semantic_descriptors[word]
+    for e in choices:
+        if e in semantic_descriptors:
+            vec2 = semantic_descriptors[e]
+            similarity = similarity_fn(vec1, vec2)
+        else:
+            similarity = -1.0
+
+        if similarity > largest_similarity:
+            largest_similarity = similarity
+            answer = e
+
+    return answer
+
+#Subpart e
+
+def run_similarity_test(filename, semantic_descriptors, similarity_fn):
+    correct = 0
+    words = open(filename, "r", encoding="latin1").read().split("\n")
+    for question in words:
+        question = question.split()
+        if(question and most_similar_word(question[0], question[2:], semantic_descriptors, similarity_fn) == question[1]):
+            correct += 1
+    return (float) (100.0*correct/len(words))
+
+
 
 if __name__ == "__main__":
-    pass
+    sd = build_semantic_descriptors_from_files(["project3/Anthony Trollope___Lady Anna.txt", "project3/2600-0.txt", "project3/pg7178.txt"])
+    print(run_similarity_test("/home/hina/PycharmProjects/esc180/project3/test.txt", sd, cosine_similarity))
