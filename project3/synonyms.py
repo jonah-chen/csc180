@@ -1,7 +1,7 @@
 """
 """
 
-import numpy as np
+from math import sqrt
 
 def cosine_similarity(vec1, vec2):
     """Return the cosine similarity of the two words described by the vectors vec1 and vec2 as a float.
@@ -20,7 +20,7 @@ def cosine_similarity(vec1, vec2):
     for val in vec2.values():
         p2 += val * val
     
-    return dot_product / np.sqrt(p1*p2)
+    return dot_product / sqrt(p1*p2)
     
 
 def build_semantic_descriptors(sentences):
@@ -132,6 +132,5 @@ def run_similarity_test(filename, semantic_descriptors, similarity_fn):
 
 
 if __name__ == "__main__":
-    sd = build_semantic_descriptors_from_files(["/home/hina/PycharmProjects/esc180/sample_case.txt"])
-    print(sd)
-    print(run_similarity_test("/home/hina/PycharmProjects/esc180/sample_test.txt", sd, cosine_similarity))
+    sd = build_semantic_descriptors_from_files(["/home/hina/PycharmProjects/esc180/project3/pg7178.txt", "/home/hina/PycharmProjects/esc180/project3/2600-0.txt"])
+    print(run_similarity_test("/home/hina/PycharmProjects/esc180/project3/test.txt", sd, cosine_similarity))
