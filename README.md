@@ -1,3 +1,3 @@
-# esc180
+# csc180
 
-Work during the first semester programming course ESC180. Includes some unrelated work also.
+Work during the first semester programming course. Includes some unrelated work also. The course is actually python not HTML.
